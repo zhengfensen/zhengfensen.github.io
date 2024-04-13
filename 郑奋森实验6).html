@@ -1,0 +1,138 @@
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
+    <title>Intro to MapView - Create a 2D map | Sample | ArcGIS Maps SDK for JavaScript 4.29</title>
+    <style>
+      html,
+      body,
+  #viewDiv {
+    padding: 0;
+    margin: 0;
+    height: 100%;
+    width: 100%;
+   }
+
+  header {
+    background-image: url('https://img95.699pic.com/xsj/0r/2v/id.jpg%21/fh/300'); /* 页眉背景图片地址 */
+    background-repeat: no-repeat;
+    background-size: cover;
+    color: black;
+    padding: 0;
+    height:60px;
+   }
+
+  header h1 {
+    margin: 0 10px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    font-family: '黑体', sans-serif; /* 修改字体为黑体 */
+    text-align: left; /* 大标题左对齐 */
+    height:5px;
+   }
+
+  header h2 {
+    margin-top: 0; /* 小标题距离大标题3像素 */
+    color: #999999; /* 设置小标题颜色 */
+    text-align: left; /* 小标题也左对齐 */
+    font-size:14px;
+
+   }
+  </style>
+    <link rel="stylesheet" href="https://js.arcgis.com/4.29/esri/themes/light/main.css" />
+    <script src="https://js.arcgis.com/4.29/">
+  </script>
+
+    <script>
+      require(["esri/layers/FeatureLayer",
+               "esri/Map","esri/views/MapView",
+               "esri/widgets/BasemapGallery",
+               "esri/widgets/ScaleBar",
+               "esri/widgets/Search",
+               "esri/widgets/Home",
+               "esri/widgets/LayerList",
+               "esri/widgets/Legend",
+               "esri/widgets/Sketch",
+               "esri/layers/GraphicsLayer"
+               ], 
+      (FeatureLayer,Map,MapView,BasemapGallery,ScaleBar,Search,Home,LayerList,Legend,Sketch, GraphicsLayer) => {
+        //创建要素图层
+        const layer = new FeatureLayer({
+        url:"https://www.geosceneonline.cn/server/rest/services/Hosted/全国各省妇幼保健院数/FeatureServer"      //输入地图URL
+        });
+        const graphicsLayer = new GraphicsLayer();
+        const map = new Map({
+          basemap: "topo-vector",
+          layers: [graphicsLayer]
+        });
+        map.add(layer);                           //要素图层加入地图
+       
+        const view = new MapView({
+          container: "viewDiv",
+          map: map,
+          zoom: 3,                                //范围设置为3
+          center: [116, 40]                       // 中心点坐标设为北京
+        });
+        
+        
+        //比例尺和微件位置
+        const scaleBar = new ScaleBar({
+          view: view,
+          unit: "dual"
+        });
+        view.ui.add(scaleBar, {
+          position: "bottom-left"
+        });
+        
+        //搜索框和微件位置
+        const searchWidget = new Search({
+        view: view
+        });
+        view.ui.add(searchWidget, {
+        position: "top-right",
+        index: 2
+        });
+        
+    
+        //图层列表和微件位置
+        let layerList = new LayerList({
+        view: view
+        });
+        view.ui.add(layerList, {
+        position: "top-left"
+        });
+        
+        //底图库部件和微件位置
+        const basemapGallery = new BasemapGallery({
+          view: view
+        });
+        view.ui.add(basemapGallery, {
+          position: "top-left"
+        });
+        
+        //图例和微件位置
+        let legend = new Legend({
+        view: view
+        });
+        view.ui.add(legend, "bottom-right");
+        //sketch
+        view.when(() => {
+        const sketch = new Sketch({
+          layer: graphicsLayer,
+          view: view,
+          // graphic will be selected as soon as it is created
+          creationMode: "update"
+        });
+
+        view.ui.add(sketch, "top-right");
+      });
+     });
+      </script>
+  </head>
+  <body>
+    <header>
+        <h1>全国各省妇幼保健院</h1><br/>
+        <h2>这是关于全国各省妇幼保健</h2><br/>
+    </header>
+    <div id="viewDiv"></div>
+  </body>
+</html>
